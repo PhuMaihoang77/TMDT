@@ -1,0 +1,255 @@
+/* ==========================================================================
+   CSS TRANG CHI TIẾT GIA SƯ (Được lấy từ thiết kế mới nhất)
+   ========================================================================== */
+.tutor-detail {
+    padding: 2rem 1rem;
+}
+
+/* Header (Profile Card) */
+.tutor-detail-header {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2.5rem;
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    padding: 2.5rem;
+    align-items: start;
+}
+
+.tutor-detail-image {
+    width: 280px;
+    height: 280px;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: var(--gray-100);
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tutor-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.avatar-placeholder-xlarge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.avatar-placeholder-xlarge i {
+    font-size: 6rem;
+    color: var(--gray-300);
+}
+
+.badge-verified-large {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary);
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: var(--shadow-md);
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.tutor-detail-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.detail-header-top h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.25rem;
+    color: var(--dark-900);
+}
+
+.detail-specialization {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.95rem;
+    color: var(--dark-700);
+}
+
+.stars { display: flex; gap: 0.2rem; }
+.stars i { color: #fbbf24; }
+
+.detail-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat {
+    background: var(--gray-100);
+    border-radius: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.5rem;
+    color: var(--dark-900);
+    font-weight: 700;
+}
+
+.stat p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+.detail-contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    background: var(--bg-color);
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+.detail-contact p {
+    margin: 0;
+    color: var(--dark-700);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-contact i {
+    color: var(--primary);
+    width: 16px;
+}
+
+/* Khối Nội Dung Dưới */
+.detail-content {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.content-section {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+}
+
+.content-section h3 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.25rem;
+    color: var(--dark-900);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--gray-100);
+    padding-bottom: 0.75rem;
+}
+
+.content-section h3 i { color: var(--primary); }
+
+.content-section p {
+    color: var(--dark-700);
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.course-card {
+    border-radius: 1rem;
+    background: var(--gray-100);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.3s ease;
+}
+
+.course-card:hover { transform: translateY(-2px); }
+
+.course-card h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--dark-900);
+}
+
+.course-card p {
+    font-size: 0.85rem;
+    color: var(--dark-700);
+    margin-bottom: 1rem;
+}
+
+.course-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 0.75rem;
+    margin-top: auto;
+}
+
+.course-price {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+@media (max-width: 980px) {
+    .tutor-detail-header {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+    .tutor-detail-image {
+        width: 220px;
+        height: 220px;
+    }
+    .detail-rating, .detail-contact { justify-content: center; }
+    .detail-stats { width: 100%; }
+}

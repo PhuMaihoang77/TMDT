@@ -1,0 +1,419 @@
+/* ============================================
+   Admin Layout & Dashboard
+   ============================================ */
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: calc(100vh - 70px);
+    background: var(--gray-50);
+}
+
+/* ============================================
+   Admin Sidebar
+   ============================================ */
+
+.admin-sidebar {
+    background: var(--dark-900);
+    color: white;
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-lg);
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    position: sticky;
+    top: 70px;
+}
+
+.sidebar-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--dark-800);
+}
+
+.sidebar-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    color: white;
+    font-size: 1.125rem;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--gray-300);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+    position: relative;
+    font-weight: 500;
+}
+
+.sidebar-link:hover {
+    background: var(--dark-800);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: var(--primary);
+    color: white;
+}
+
+.sidebar-link i {
+    width: 20px;
+    flex-shrink: 0;
+}
+
+.badge-count,
+.badge-warning {
+    margin-left: auto;
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background: var(--warning);
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: var(--dark-800);
+    margin: var(--space-md) 0;
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-danger:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* ============================================
+   Admin Content
+   ============================================ */
+
+.admin-content {
+    padding: var(--space-2xl);
+    overflow-y: auto;
+}
+
+.admin-section {
+    max-width: 1200px;
+}
+
+.admin-section h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: var(--space-2xl);
+}
+
+/* ============================================
+   Dashboard Cards
+   ============================================ */
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.dash-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.dash-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.dash-card i {
+    font-size: 2rem;
+    color: var(--primary);
+    align-self: flex-start;
+    background: var(--primary-50);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+}
+
+.dash-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.dash-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+}
+
+.dash-card small {
+
+    font-size: 0.875rem;
+}
+
+.dash-card a {
+    align-self: flex-start;
+}
+
+.dash-warning .dash-value {
+    color: var(--warning);
+}
+
+.dashboard-grid {
+    display: grid;
+    gap: var(--space-2xl);
+}
+
+.dashboard-grid h1 {
+    margin-bottom: var(--space-lg);
+}
+
+/* ============================================
+   Admin Forms
+   ============================================ */
+
+.profile-form,
+.booking-form {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.profile-section,
+.booking-section {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.profile-section:last-child,
+.booking-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.profile-section h3,
+.booking-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0;
+    margin-bottom: var(--space-lg);
+}
+
+.tutor-booking-card {
+    background: var(--primary-50);
+    border: 2px solid var(--primary-light);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+}
+
+.tutor-booking-info {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: var(--space-lg);
+    align-items: center;
+}
+
+.tutor-booking-image {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: white;
+}
+
+.tutor-booking-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tutor-booking-details h4 {
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.tutor-booking-details p {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Form Layout
+   ============================================ */
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+/* ============================================
+   Booking Container
+   ============================================ */
+
+.booking-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-xl);
+}
+
+.booking-content {
+    display: grid;
+    gap: var(--space-2xl);
+}
+
+.booking-form {
+    padding: var(--space-2xl);
+}
+
+.booking-form h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-lg);
+}
+
+/* ============================================
+   Profile Container
+   ============================================ */
+
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-xl);
+}
+
+.profile-form {
+    padding: var(--space-2xl);
+}
+
+/* ============================================
+   Responsive Admin
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        position: fixed;
+        left: -250px;
+        height: calc(100vh - 70px);
+        z-index: 50;
+        transition: left var(--transition-base);
+    }
+
+    .admin-sidebar.active {
+        left: 0;
+    }
+
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-content {
+        padding: var(--space-lg);
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-form,
+    .booking-form {
+        padding: var(--space-lg);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .tutor-booking-info {
+        grid-template-columns: 80px 1fr;
+        gap: var(--space-md);
+    }
+
+    .tutor-booking-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .detail-stats {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .data-table {
+        font-size: 0.75rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-cards {
+        gap: var(--space-sm);
+    }
+
+    .dash-card {
+        padding: var(--space-md);
+    }
+
+    .dash-card i {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+}

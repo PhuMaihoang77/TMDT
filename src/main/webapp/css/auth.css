@@ -1,0 +1,298 @@
+/* ============================================
+   Auth Pages Styles - Login & Register
+   ============================================ */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: var(--space-xl);
+}
+
+.auth-card {
+    background: white;
+    border-radius: var(--radius-2xl);
+    padding: var(--space-3xl);
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.5s ease;
+}
+
+.auth-card-large {
+    max-width: 500px;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.auth-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+}
+
+.auth-logo i {
+    font-size: 3.5rem;
+    color: var(--primary);
+    background: var(--primary-50);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+}
+
+.auth-header h1 {
+    font-size: 1.875rem;
+    color: var(--dark-900);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--gray-500);
+    margin: 0;
+}
+
+/* ============================================
+   Auth Form
+   ============================================ */
+.auth-form {
+    margin-bottom: var(--space-2xl);
+}
+
+.auth-form .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.checkbox input {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.forgot-link {
+    font-size: 0.875rem;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Form Divider
+   ============================================ */
+.form-divider {
+    position: relative;
+    text-align: center;
+    margin: var(--space-xl) 0;
+    color: var(--gray-400);
+}
+
+.form-divider::before,
+.form-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 2rem);
+    height: 1px;
+    background: var(--gray-200);
+}
+
+.form-divider::before {
+    left: 0;
+}
+
+.form-divider::after {
+    right: 0;
+}
+
+/* ============================================
+   Social Buttons
+   ============================================ */
+.btn-social {
+    background: white;
+    border: 2px solid var(--gray-200);
+    color: var(--dark-800);
+}
+
+.btn-social:hover {
+    border-color: var(--primary);
+    background: var(--primary-50);
+}
+
+.btn-google {
+    color: #4285F4;
+}
+
+/* ============================================
+   Auth Footer
+   ============================================ */
+.auth-footer {
+    text-align: center;
+    border-top: 1px solid var(--gray-200);
+    padding-top: var(--space-lg);
+}
+
+.auth-footer p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.auth-footer a {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* ============================================
+   Role Selector
+   ============================================ */
+.role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-2xl);
+}
+
+.role-btn {
+    padding: 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    background: white;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.role-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-50);
+}
+
+.role-btn.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+.role-btn i {
+    font-size: 1.5rem;
+}
+
+/* ============================================
+   Background Shapes
+   ============================================ */
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.auth-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 20s ease-in-out infinite;
+}
+
+.auth-shape-1 {
+    width: 300px;
+    height: 300px;
+    background: white;
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.auth-shape-2 {
+    width: 200px;
+    height: 200px;
+    background: white;
+    bottom: -50px;
+    right: -50px;
+    animation-delay: 2s;
+}
+
+.auth-shape-3 {
+    width: 150px;
+    height: 150px;
+    background: white;
+    top: 50%;
+    right: 10%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* ============================================
+   Responsive Auth
+   ============================================ */
+@media (max-width: 640px) {
+    .auth-container {
+        max-width: 100%;
+    }
+
+    .auth-card {
+        padding: var(--space-xl);
+    }
+
+    .auth-card-large {
+        max-width: 100%;
+    }
+}
