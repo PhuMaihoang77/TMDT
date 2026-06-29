@@ -27,19 +27,7 @@
     </c:choose>
             <section class="dashboard-grid">
                 <h1>Dashboard</h1>
-
-                <!-- Alerts -->
-                <c:if test="${not empty success}">
-                    <div class="alert alert-success" style="padding: 1rem; background-color: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.3); color: #2ecc71; border-radius: 8px; margin: 1rem 0; font-size: 0.95rem;">
-                        <i class="fas fa-check-circle"></i> ${success}
-                    </div>
-                </c:if>
-                <c:if test="${not empty error}">
-                    <div class="alert alert-error" style="padding: 1rem; background-color: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; border-radius: 8px; margin: 1rem 0; font-size: 0.95rem;">
-                        <i class="fas fa-exclamation-circle"></i> ${error}
-                    </div>
-                </c:if>
-
+                
                 <c:if test="${sessionScope.account.role == 1}">
                     <!-- Student Dashboard -->
                     <div class="dashboard-cards">
@@ -47,14 +35,14 @@
                             <i class="fas fa-calendar-check"></i>
                             <h3>Lớp Sắp Tới</h3>
                             <p class="dash-value">${requestScope.upcomingCount}</p>
-                            <a href="#recent-bookings">Xem Chi Tiết</a>
+                            <a href="#">Xem Chi Tiết</a>
                         </div>
 
                         <div class="dash-card">
                             <i class="fas fa-star"></i>
                             <h3>Gia Sư Yêu Thích</h3>
                             <p class="dash-value">${requestScope.favoriteTutors}</p>
-                            <a href="${pageContext.request.contextPath}/tutors">Xem Danh Sách</a>
+                            <a href="#">Xem Danh Sách</a>
                         </div>
 
                         <div class="dash-card">
@@ -65,7 +53,7 @@
                         </div>
                     </div>
 
-                    <div class="section-card" id="recent-bookings">
+                    <div class="section-card">
                         <h2>Lịch Học Gần Đây</h2>
                         <table class="data-table">
                             <thead>
@@ -106,21 +94,13 @@
                                                             </a>
                                                         </c:when>
                                                         <c:when test="${b.status eq 'confirmed'}">
-                                                            <c:choose>
-                                                                <c:when test="${b.courseStatus eq 'PAID'}">
-                                                                    <span class="badge" style="background:#00b89422;color:#00d2a8;padding:0.4em 0.9em;border-radius:8px;font-size:0.82rem;">
-                                                                        <i class="fas fa-check-circle"></i> Da Thanh Toan
-                                                                    </span>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <a href="${pageContext.request.contextPath}/payment?courseId=${b.courseId}&tutorId=${b.tutorId}" class="btn btn-sm btn-success" style="margin-right: 5px;">
-                                                                        <i class="fas fa-credit-card"></i> Thanh Toan
-                                                                    </a>
-                                                                    <a href="<c:url value='/complaint?bookingId=${b.id}'/>" class="btn btn-sm btn-warning">
-                                                                        <i class="fas fa-exclamation-triangle"></i> Khieu Nai
-                                                                    </a>
-                                                                </c:otherwise>
-                                                            </c:choose>
+                                                            <a href="${pageContext.request.contextPath}/payment?courseId=${b.courseId}&tutorId=${b.tutorId}" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                                <i class="fas fa-credit-card"></i> Thanh Toán
+                                                            </a>
+                                                            <button type="button" class="btn btn-sm btn-warning"
+                                                                    onclick="openFeedbackModal('${b.id}', '${b.studentId}', '${b.tutorId}', '${b.courseId}', `${b.tutor.name}`)">
+                                                                <i class="fas fa-exclamation-triangle"></i> Khiếu Nại / Đánh Giá
+                                                            </button>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span style="color: var(--gray-400);">Không có hành động</span>
@@ -376,8 +356,30 @@
             </section>
         </main>
     </div>
+            <jsp:include page="/layout/feedback-modal.jsp"/>
+            <jsp:include page="/layout/footer.jsp"/>
 
-    <jsp:include page="/layout/footer.jsp"/>
-    <script src="<c:url value='/js/main.js'/>"></script>
+            <script src="<c:url value='/js/main.js'/>"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get('status');
+                    const msgType = urlParams.get('msgType');
+
+                    if (status === 'success') {
+                        if (msgType === 'review') {
+                            showNotification('Đăng đánh giá công khai thành công!', 'success');
+                        } else if (msgType === 'complaint') {
+                            showNotification('Gửi khiếu nại tới Ban quản trị thành công!', 'success');
+                        }
+                        // Xóa param trên url để nhìn chuyên nghiệp hơn
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (status === 'fail') {
+                        showNotification('Có lỗi hệ thống xảy ra, vui lòng thực hiện lại!', 'error');
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                });
+            </script>
 </body>
 </html>
+

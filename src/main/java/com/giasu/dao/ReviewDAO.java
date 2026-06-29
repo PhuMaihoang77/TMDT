@@ -54,17 +54,7 @@ public class ReviewDAO {
     }
 
     public String generateNextId() {
-        String sql = "SELECT id FROM review ORDER BY id DESC LIMIT 1";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                String lastId = rs.getString("id").trim();
-                int num = Integer.parseInt(lastId.replace("rev", "").trim()) + 1;
-                return String.format("rev%03d", num);
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return "rev001";
+        return "rev" + String.valueOf(System.currentTimeMillis()).substring(3);
     }
 
     private Review mapRow(ResultSet rs) throws SQLException {
