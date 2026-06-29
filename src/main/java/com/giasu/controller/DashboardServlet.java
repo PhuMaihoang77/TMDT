@@ -19,6 +19,7 @@ public class DashboardServlet extends HttpServlet {
     private ReviewDAO reviewDAO = new ReviewDAO();
     private StudentDAO studentDAO = new StudentDAO();
     private TutorDAO tutorDAO = new TutorDAO();
+    private InterestDAO interestDAO = new InterestDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -168,6 +169,10 @@ public class DashboardServlet extends HttpServlet {
 
             req.setAttribute("upcomingCount", upcomingCount);
             req.setAttribute("favoriteTutors", favoriteCount);
+
+            // Load danh sach gia su yeu thich
+            List<Tutor> favoriteTutorList = interestDAO.findFavoriteTutorsByStudentId(student.getId());
+            req.setAttribute("favoriteTutorList", favoriteTutorList);
 
             // Real balance from DB
             Student freshStudent = studentDAO.findById(student.getId());
