@@ -73,4 +73,26 @@ public class ComplaintDAO {
 
         return complaint;
     }
+
+    public boolean insert(Complaint c) {
+        String sql = "INSERT INTO complaint (id, booking_id, student_id, title, description, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, c.getId());
+            ps.setString(2, c.getBookingId());
+            ps.setString(3, c.getStudentId());
+            ps.setString(4, c.getTitle());
+            ps.setString(5, c.getDescription());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String generateNextId() {
+        // ID dài tối đa 20 ký tự (do DB cấu hình CHAR(20))
+        // Sử dụng time milis kết hợp tiền tố, tuyệt đối không bao giờ trùng và không bị lỗi parse String
+        return "comp" + String.valueOf(System.currentTimeMillis()).substring(3);
+    }
 }

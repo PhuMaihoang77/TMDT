@@ -138,3 +138,13 @@ body {
         height: auto;
     }
 }
+
+/* Hiệu ứng tương tác cho sao chọn đánh giá trên Modal */
+.star-clickable {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.star-clickable:hover {
+    transform: scale(1.2);
+}
+
