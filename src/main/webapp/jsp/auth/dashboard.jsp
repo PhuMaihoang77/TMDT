@@ -53,6 +53,33 @@
                         </div>
                     </div>
 
+                    <!-- Danh sach Gia su yeu thich -->
+                    <c:if test="${not empty requestScope.favoriteTutorList}">
+                        <div class="section-card" style="margin-top: 1.5rem;">
+                            <h2><i class="fas fa-heart" style="color: #e74c3c;"></i> Gia Sư Yêu Thích</h2>
+                            <div class="favorite-tutors-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                                <c:forEach var="fav" items="${requestScope.favoriteTutorList}">
+                                    <div class="favorite-tutor-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; gap: 1rem; align-items: center; transition: box-shadow 0.2s;">
+                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: #f0f4ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fas fa-user-graduate" style="font-size: 1.5rem; color: #4f46e5;"></i>
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <h4 style="margin: 0 0 0.25rem; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fav.name}</h4>
+                                            <p style="margin: 0 0 0.25rem; font-size: 0.8rem; color: #64748b;">${fav.specialization}</p>
+                                            <div style="color: #f39c12; font-size: 0.8rem;">
+                                                <c:forEach begin="1" end="${fav.evaluate}">⭐</c:forEach>
+                                                <span style="color: #64748b; margin-left: 4px;">${fav.evaluate}/5</span>
+                                            </div>
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/tutor-detail?id=${fav.id}" class="btn btn-sm btn-primary" style="flex-shrink: 0;">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </c:if>
+
                     <div class="section-card">
                         <h2>Lịch Học Gần Đây</h2>
                         <table class="data-table">

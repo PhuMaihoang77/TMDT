@@ -128,6 +128,14 @@
                         <c:forEach var="tutor" items="${requestScope.tutors}">
                             <div class="tutor-list-card">
 
+                                <!-- Favorite Heart Button -->
+                                <button class="favorite-btn" 
+                                        data-tutor-id="${tutor.id}" 
+                                        onclick="toggleFavorite('${tutor.id}', this)" 
+                                        title="Thêm vào yêu thích">
+                                    <i class="far fa-heart"></i>
+                                </button>
+
                                 <!-- IMAGE -->
                                 <div class="tutor-list-image">
                                     <c:choose>
@@ -232,5 +240,55 @@
 
 <jsp:include page="/layout/footer.jsp"/>
 <script src="<c:url value='/js/main.js?v=3'/>"></script>
+<script>
+// Favorite toggle function
+function toggleFavorite(tutorId, btn) {
+    const icon = btn.querySelector('i');
+    
+    fetch('${pageContext.request.contextPath}/favorite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'tutorId=' + encodeURIComponent(tutorId)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.favorite) {
+                icon.className = 'fas fa-heart';
+                btn.classList.add('active');
+            } else {
+                icon.className = 'far fa-heart';
+                btn.classList.remove('active');
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Favorite error:', err);
+        alert('Có lỗi xảy ra, vui lòng thử lại.');
+    });
+}
+
+// Load favorite status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const favBtns = document.querySelectorAll('.favorite-btn');
+    // Only check if user might be logged in (student)
+    if (favBtns.length > 0 && ${not empty sessionScope.account && sessionScope.account.role == 1}) {
+        favBtns.forEach(btn => {
+            const tutorId = btn.getAttribute('data-tutor-id');
+            fetch('${pageContext.request.contextPath}/favorite?tutorId=' + encodeURIComponent(tutorId))
+                .then(r => r.json())
+                .then(data => {
+                    if (data.favorite) {
+                        btn.querySelector('i').className = 'fas fa-heart';
+                        btn.classList.add('active');
+                    }
+                })
+                .catch(() => {});
+        });
+    }
+});
+</script>
 </body>
 </html>
