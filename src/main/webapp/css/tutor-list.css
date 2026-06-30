@@ -18,7 +18,7 @@
    ========================================================================== */
 .tutors-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 340px 1fr; /* Đã tăng chiều ngang từ 280px lên 320px */
     gap: 2rem;
     margin-top: 2rem;
     align-items: start;
@@ -30,10 +30,27 @@
 .filters-sidebar {
     background: white;
     border-radius: 1.25rem;
-    padding: 1.5rem;
+    padding: 1.25rem; /* Giảm padding một chút để không bị thô */
     box-shadow: var(--shadow-sm);
     position: sticky;
     top: 2rem;
+    max-height: calc(100vh - 4rem); /* Chốt chiều cao để tạo thanh cuộn độc lập */
+    overflow-y: auto; /* Tự động hiện thanh cuộn dọc khi nội dung dài */
+}
+
+/* Custom thanh cuộn cho Sidebar (Chỉ áp dụng trình duyệt webkit như Chrome/Edge) */
+.filters-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+.filters-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.filters-sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--gray-300);
+    border-radius: 10px;
+}
+.filters-sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--gray-400);
 }
 
 .filters-sidebar h3 {
@@ -79,7 +96,8 @@
     width: 100%;
     border: 1px solid var(--gray-300);
     border-radius: 0.75rem;
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* Thu nhỏ font chữ trong ô nhập liệu */
+    padding: 0.5rem 1rem; /* Giảm độ dày của ô nhập liệu */
     color: var(--dark-900);
     background-color: white;
     outline: none;
@@ -88,7 +106,7 @@
 }
 
 .filter-input {
-    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    padding-left: 2.2rem; /* Căn lại khoảng cách cho icon kính lúp */
 }
 
 .filter-select {
@@ -269,11 +287,13 @@
 
 .tutor-name-section {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: flex-start; /* Thay đổi cốt lõi: Ép số sao sát vào cụm Tên thay vì đẩy ra xa */
+    align-items: center;
+    gap: 1.25rem; /* Khoảng cách giữa cụm Tên/Badge và Số sao */
     margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    width: 100%;
+    padding-right: 45px; /* Quan trọng: Chừa vùng "cấm địa" 45px bên phải để không bao giờ chạm vào nút Trái tim */
+    flex-wrap: wrap; /* Tự rớt dòng nếu tên gia sư quá dài */
 }
 
 .tutor-name-section h3 {
@@ -341,10 +361,15 @@
     gap: 0.35rem;
 }
 
+/* Đẩy các nút hành động sang góc phải dưới cùng */
 .tutor-actions {
     display: flex;
+    justify-content: flex-end; /* Đẩy cụm nút sang phải */
     gap: 0.75rem;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--gray-200); /* Thêm dải phân cách nhẹ nhàng */
+    width: 100%;
 }
 
 .tutor-actions .btn {
@@ -570,4 +595,386 @@
         width: 100%;
         justify-content: center;
     }
+}
+
+/* ==========================================================================
+   BỔ SUNG STYLE CHO BỘ LỌC (SIDEBAR)
+   ========================================================================== */
+
+/* Căn chỉnh Tiêu đề và nút Reset */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--gray-100);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+    font-size: 1rem;
+    color: var(--dark-900);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-header h3 i {
+    color: var(--primary);
+}
+
+.btn-reset {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-reset:hover {
+    color: #e74c3c;
+}
+
+/* Nút Chọn (Trình Độ Gia Sư) */
+.segmented-control {
+    display: flex;
+    gap: 0.35rem;
+    background: var(--gray-100);
+    padding: 0.35rem;
+    border-radius: 0.75rem;
+}
+
+.segmented-control input[type="radio"] {
+    display: none;
+}
+
+.segmented-control label {
+    flex: 1;
+    text-align: center;
+    padding: 0.4rem 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    margin: 0 !important; /* Đè lên thuộc tính label cũ nếu có */
+}
+
+.segmented-control input[type="radio"]:checked + label {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tiện ích khoảng cách */
+.mb-2 {
+    margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   BỔ SUNG CSS CHO ĐẦY ĐỦ CÁC TRƯỜNG BỘ LỌC
+   ========================================================================== */
+
+/* Ép kiểu chữ in hoa, nhỏ, màu nhạt cho các Label giống Mockup */
+.filter-group label {
+    font-size: 0.7rem; /* Thu nhỏ chữ tiêu đề của mỗi ô */
+    text-transform: uppercase;
+    color: var(--gray-500);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Flex dòng để chứa Cấp học & Khối lớp ngang nhau */
+.filter-row {
+    display: flex;
+    gap: 0.75rem;
+}
+.w-50 {
+    width: 50%;
+}
+
+/* Hộp xám bọc khu vực giảng dạy */
+.filter-box {
+    background-color: #f8fafc;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.box-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--dark-700);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+.filter-box .sub-label {
+    font-size: 0.65rem;
+    color: var(--gray-400);
+}
+
+/* Thanh kéo học phí (Range Slider) */
+.price-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    margin-top: -6px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: var(--gray-300);
+    border-radius: 2px;
+}
+.price-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 85px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Nút Submit bự */
+.btn-filter {
+    margin-top: 1rem;
+    padding: 0.75rem; /* Giảm độ dày nút Lọc Kết Quả */
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem; /* Thu nhỏ font nút Lọc */
+}
+
+/* ==========================================================================
+   THANH ĐIỀU KHIỂN & SẮP XẾP (CONTROL BAR)
+   ========================================================================== */
+.tutors-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 0.85rem 1.25rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-100);
+}
+
+.tutors-control-bar .results-count {
+    margin: 0;
+    color: var(--dark-700);
+    font-size: 0.95rem;
+}
+
+.control-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Ghi đè nền của toggle container để nó ăn nhập với thanh trắng */
+.control-actions .toggle-container {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* Sắp xếp */
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-left: 1px solid var(--gray-200);
+    padding-left: 1.5rem;
+}
+
+.sort-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+}
+
+.sort-select {
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark-900);
+    border: 1px solid var(--gray-200);
+    border-radius: 0.5rem;
+    background-color: var(--gray-50);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem top 50%;
+    background-size: 0.6rem auto;
+}
+
+.sort-select:hover, .sort-select:focus {
+    border-color: var(--primary);
+    background-color: white;
+}
+
+/* ==========================================================================
+   TINH CHỈNH THẺ GIA SƯ (TUTOR CARD - COMPACT)
+   ========================================================================== */
+
+/* Khử khoảng trống thừa của khối bao ngoài */
+.tutor-list-details {
+    gap: 0;
+}
+
+/* Đưa Tên, Badge và Rating lên cùng 1 hàng ngang */
+.tutor-name-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.tutor-name-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tutor-name-left h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--dark-900);
+}
+
+/* Badge (Giáo Viên / Sinh Viên) */
+.tutor-type-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.badge-gv {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #bfdbfe;
+}
+.badge-sv {
+    background-color: #faf5ff;
+    color: #a855f7;
+    border: 1px solid #e9d5ff;
+}
+
+/* Khu vực meta (Chuyên môn, Địa chỉ...) ép sát vào nhau */
+.tutor-meta-compact {
+    margin-bottom: 0.75rem;
+}
+.tutor-meta-compact p {
+    margin: 0.2rem 0; /* Ép sát dòng */
+    font-size: 0.8rem;
+    color: var(--dark-700);
+}
+.phone-text {
+    color: var(--gray-500);
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+/* Mô tả (Description) in nghiêng, màu nhạt đi */
+.tutor-description-large {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    font-style: italic;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.badge-default {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* Đồng bộ giao diện Select2 với CSS TutorHub hiện tại *//* 1. Ép form Select2 giống y hệt ô input của TutorHub */
+.select2-container .select2-selection--single {
+    height: auto !important;
+    padding: 0.5rem 1rem !important;
+    border: 1px solid var(--gray-300) !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.85rem !important;
+    outline: none !important;
+    display: flex;
+    align-items: center;
+}
+
+/* 2. Chỉnh lại chữ hiển thị và icon mũi tên */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--dark-900) !important;
+    padding: 0 !important;
+    line-height: normal !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 0.75rem !important;
+}
+
+/* 3. Hiệu ứng khi bấm vào (focus) đổi viền xanh lá */
+.select2-container--open .select2-selection--single {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+/* 4. Chỉnh cái menu xổ xuống cho bo góc và đẹp hơn */
+.select2-dropdown {
+    border: 1px solid var(--gray-300) !important;
+    border-radius: 0.75rem !important;
+    box-shadow: var(--shadow-md) !important;
+    overflow: hidden;
+    margin-top: 5px;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--gray-300);
+    outline: none;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--primary);
+}
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: var(--primary) !important;
+    color: white !important;
 }

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="<c:url value='/css/main.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/tutor-list.css?v=3'/>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 
 <body>
@@ -30,96 +35,154 @@
 
         <!-- FILTER SIDEBAR -->
         <aside class="filters-sidebar">
-            <h3>Bộ Lọc Nâng Cao</h3>
 
-            <form action="<c:url value='/tutors'/>" method="get" class="filter-form">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-sliders-h" style="color: var(--primary);"></i> Bộ Lọc Tìm Kiếm</h3>
+                <button type="button" class="btn-reset" onclick="window.location.href='${pageContext.request.contextPath}/tutors'">
+                    <i class="fas fa-sync-alt"></i> Reset Bộ Lọc
+                </button>
+            </div>
 
+            <form id="filterForm" class="filter-form" action="${pageContext.request.contextPath}/tutors" method="GET">
+
+                <!-- 1. Từ khóa -->
                 <div class="filter-group">
-                    <label>Tìm Kiếm Chung</label>
-                    <div style="position: relative; width: 100%;">
-                        <i class="fas fa-search" style="position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: #94a3b8; pointer-events: none;"></i>
-                        <input type="text"
-                               name="keyword"
-                               placeholder="Tên gia sư, môn..."
-                               value="${requestScope.keyword}"
-                               class="filter-input"
-                               style="padding-left: 38px !important; width: 100%; box-sizing: border-box;">
+                    <label>TỪ KHÓA TỰ DO</label>
+                    <div class="search-input-group">
+                        <i class="fas fa-search"></i>
+                        <!-- Thêm thuộc tính value để giữ lại từ khóa sau khi load trang -->
+                        <input type="text" name="keyword" class="filter-input"
+                               placeholder="Tìm tên thầy cô, môn học..."
+                               value="${requestScope.keyword != null ? requestScope.keyword : ''}">
                     </div>
                 </div>
 
+                <!-- 2. Môn Học -->
                 <div class="filter-group">
-                    <label>Môn Học / Chuyên Ngành</label>
-                    <select name="subjectName" class="filter-select">
-                        <option value="">Tất Cả</option>
+                    <label>MÔN HỌC / CHUYÊN MÔN</label>
+                    <select id="subjectSelect" name="subject" class="filter-select">
+                        <option value="">Tất cả môn học</option>
                         <c:forEach var="spec" items="${requestScope.specializations}">
-                            <option value="${spec}" <c:if test="${spec == requestScope.selectedSubject}">selected</c:if>>
+                            <option value="${spec}" ${spec == requestScope.selectedSubject ? 'selected' : ''}>
                                     ${spec}
                             </option>
                         </c:forEach>
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label>Trình Độ / Cấp Bậc</label>
-                    <select name="level" class="filter-select">
-                        <option value="">Tất Cả</option>
-                        <option value="Tiểu Học" <c:if test="${requestScope.selectedLevel == 'Tiểu Học'}">selected</c:if>>Tiểu Học</option>
-                        <option value="THCS" <c:if test="${requestScope.selectedLevel == 'THCS'}">selected</c:if>>Cấp 2 (THCS)</option>
-                        <option value="THPT" <c:if test="${requestScope.selectedLevel == 'THPT'}">selected</c:if>>Cấp 3 (THPT)</option>
-                        <option value="Đại Học" <c:if test="${requestScope.selectedLevel == 'Đại Học'}">selected</c:if>>Đại Học / Chuyên Môn</option>
-                        <option value="Ngoại Ngữ" <c:if test="${requestScope.selectedLevel == 'Ngoại Ngữ'}">selected</c:if>>Ngoại Ngữ (IELTS, TOEIC...)</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label>Khoảng Giá (VNĐ/Giờ)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="number" name="minPrice" placeholder="Từ..." value="${requestScope.minPrice}" class="filter-input" min="0" step="10000">
-                        <input type="number" name="maxPrice" placeholder="Đến..." value="${requestScope.maxPrice}" class="filter-input" min="0" step="10000">
+                <!-- 3. Cấp học & Khối lớp -->
+                <div class="filter-row">
+                    <div class="filter-group w-50">
+                        <label>CẤP HỌC</label>
+                        <select id="levelSelect" name="level" class="filter-select">
+                            <option value="">Tất cả</option>
+                            <option value="cap1" ${param.level == 'cap1' ? 'selected' : ''}>Cấp 1</option>
+                            <option value="cap2" ${param.level == 'cap2' ? 'selected' : ''}>Cấp 2</option>
+                            <option value="cap3" ${param.level == 'cap3' ? 'selected' : ''}>Cấp 3</option>
+                        </select>
+                    </div>
+                    <div class="filter-group w-50">
+                        <label>KHỐI LỚP</label>
+                        <select id="gradeSelect" name="grade" class="filter-select">
+                            <option value="">Chọn lớp...</option>
+                        </select>
                     </div>
                 </div>
 
+                <!-- 4. Khu vực giảng dạy (Nằm trong box xám) -->
+                <div class="filter-box">
+                    <label class="box-label">KHU VỰC GIẢNG DẠY</label>
+
+                    <div class="filter-group">
+                        <label class="sub-label">TỈNH / THÀNH PHỐ</label>
+                        <select id="province" name="province" class="filter-select mb-2">
+                            <option value="">Tất cả Tỉnh/Thành</option>
+                            <option value="HCM">TP. Hồ Chí Minh</option>
+                            <option value="HN">Hà Nội</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="sub-label">PHƯỜNG / XÃ</label>
+                        <select id="ward" name="ward" class="filter-select">
+                            <option value="">Chọn Phường/Xã...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. Trình Độ Gia Sư -->
                 <div class="filter-group">
-                    <label>Đánh Giá</label>
+                    <label>TRÌNH ĐỘ GIA SƯ</label>
+                    <div class="segmented-control">
+                        <input type="radio" id="role-all" name="tutorType" value="" ${empty requestScope.selectedTutorType ? 'checked' : ''}>
+                        <label for="role-all">Tất cả</label>
+
+                        <input type="radio" id="role-sv" name="tutorType" value="sinhvien" ${requestScope.selectedTutorType == 'sinhvien' ? 'checked' : ''}>
+                        <label for="role-sv">Sinh Viên</label>
+
+                        <input type="radio" id="role-gv" name="tutorType" value="giaovien" ${requestScope.selectedTutorType == 'giaovien' ? 'checked' : ''}>
+                        <label for="role-gv">Giáo Viên</label>
+                    </div>
+                </div>
+                <!-- 6. Học Phí Tối Đa -->
+                <div class="filter-group">
+                    <label>HỌC PHÍ TỐI ĐA (VNĐ / GIỜ)</label>
+                    <div class="price-slider-container">
+                        <input type="range" name="maxPrice" id="priceRange" min="100000" max="3000000" step="50000"
+                               value="${requestScope.maxPrice != null ? requestScope.maxPrice : '3000000'}"
+                               oninput="updatePriceLabel(this.value)">
+                        <span id="priceLabel" class="price-label">Không giới hạn</span>
+                    </div>
+                </div>
+
+                <!-- 7. Đánh Giá -->
+                <div class="filter-group">
+                    <label>ĐÁNH GIÁ TỐI THIỂU</label>
                     <select name="rating" class="filter-select">
-                        <option value="">Tất Cả</option>
-                        <option value="5" <c:if test="${requestScope.selectedRating == '5'}">selected</c:if>>5 Sao</option>
-                        <option value="4" <c:if test="${requestScope.selectedRating == '4'}">selected</c:if>>Từ 4 Sao Trở Lên</option>
-                        <option value="3" <c:if test="${requestScope.selectedRating == '3'}">selected</c:if>>Từ 3 Sao Trở Lên</option>
+                        <option value="" ${requestScope.selectedRating == '' ? 'selected' : ''}>Tất cả sao</option>
+                        <option value="5" ${requestScope.selectedRating == '5' ? 'selected' : ''}>5 Sao (Tuyệt đối)</option>
+                        <option value="4" ${requestScope.selectedRating == '4' ? 'selected' : ''}>Từ 4 Sao Trở Lên</option>
+                        <option value="3" ${requestScope.selectedRating == '3' ? 'selected' : ''}>Từ 3 Sao Trở Lên</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-filter"></i> Lọc Kết Quả
+                <button type="submit" class="btn btn-primary btn-block btn-filter">
+                    Lọc Kết Quả
                 </button>
-
-                <a href="<c:url value='/tutors'/>" class="btn btn-outline btn-block" style="text-align: center; margin-top: 10px;">
-                    Xóa bộ lọc
-                </a>
-
             </form>
         </aside>
 
         <!-- TUTORS LIST CONTENT -->
         <section class="tutors-content">
 
-            <c:set var="isSearching" value="${not empty requestScope.keyword or not empty requestScope.selectedSubject or not empty requestScope.selectedLevel}" />
+            <c:set var="isSearching" value="${not empty requestScope.keyword or not empty requestScope.selectedSubject or not empty requestScope.selectedLevel or not empty requestScope.selectedGrade}" />
+            <div class="tutors-control-bar">
+                <div class="results-count">
+                    Tìm thấy <strong>${empty requestScope.tutors ? 0 : requestScope.tutors.size()}</strong> gia sư phù hợp
+                </div>
 
-            <div class="tutors-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 1.5rem;">
-                <p class="results-count" style="margin: 0;">
-                    Tìm thấy <strong>${empty requestScope.tutors ? 0 : requestScope.tutors.size()}</strong> gia sư
-                </p>
+                <div class="control-actions">
+                    <c:if test="${not empty requestScope.tutors}">
+                        <div class="toggle-container">
+                            <span class="toggle-text">Ẩn lớp học</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="global-toggle" <c:if test="${isSearching}">checked</c:if> onchange="toggleAllCourses()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-text" style="color: var(--primary);">Hiện lớp</span>
+                        </div>
+                    </c:if>
 
-                <c:if test="${not empty requestScope.tutors}">
-                    <div class="toggle-container">
-                        <span class="toggle-text">Ẩn lớp học</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="global-toggle" <c:if test="${isSearching}">checked</c:if> onchange="toggleAllCourses()">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="toggle-text" style="color: #10b981;">Hiện lớp học</span>
+                    <div class="sort-container">
+                        <label for="sortBy" class="sort-label">Sắp xếp:</label>
+                        <select id="sortBy" name="sortBy" form="filterForm" class="sort-select" onchange="this.form.submit()">
+                            <option value="default" ${param.sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
+                            <option value="price_asc" ${param.sortBy == 'price_asc' ? 'selected' : ''}>Giá: Thấp đến Cao</option>
+                            <option value="price_desc" ${param.sortBy == 'price_desc' ? 'selected' : ''}>Giá: Cao đến Thấp</option>
+                            <option value="rating_desc" ${param.sortBy == 'rating_desc' ? 'selected' : ''}>Đánh giá: Cao xuống Thấp</option>
+                        </select>
                     </div>
-                </c:if>
+                </div>
             </div>
 
             <c:choose>
@@ -158,18 +221,36 @@
 
                                 <!-- INFO -->
                                 <div class="tutor-list-details">
-                                    <h3>${tutor.name}</h3>
+                                    <div class="tutor-name-section">
+                                        <div class="tutor-name-left">
+                                            <h3>${tutor.name}</h3>
 
-                                    <div class="tutor-rating-large">
-                                        <c:forEach begin="1" end="${tutor.evaluate}">
-                                            <i class="fas fa-star"></i>
-                                        </c:forEach>
-                                        <span>${tutor.evaluate} / 5</span>
+<%--                                            <c:choose>--%>
+<%--                                                <c:when test="${tutor.tutorType == 'giaovien' || tutor.tutorType == 'GiaoVien'}">--%>
+<%--                                                    <span class="tutor-type-badge badge-gv">GIÁO VIÊN</span>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:when test="${tutor.tutorType == 'sinhvien' || tutor.tutorType == 'SinhVien'}">--%>
+<%--                                                    <span class="tutor-type-badge badge-sv">SINH VIÊN</span>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:otherwise>--%>
+<%--                                                    <span class="tutor-type-badge badge-default">GIA SƯ</span>--%>
+<%--                                                </c:otherwise>--%>
+<%--                                            </c:choose>--%>
+                                        </div>
+
+                                        <div class="tutor-rating-large">
+                                            <c:forEach begin="1" end="${tutor.evaluate}">
+                                                <i class="fas fa-star"></i>
+                                            </c:forEach>
+                                            <span>(${tutor.evaluate}.0)</span>
+                                        </div>
                                     </div>
 
-                                    <p><strong>Chuyên:</strong> ${tutor.specialization}</p>
-                                    <p><strong>Địa chỉ:</strong> ${tutor.address}</p>
-                                    <p><strong>SĐT:</strong> ${tutor.phone}</p>
+                                    <div class="tutor-meta-compact">
+                                        <p><strong>Chức danh / Trình độ:</strong> ${tutor.specialization}</p>
+                                        <p><strong>Địa bàn giảng dạy:</strong> ${tutor.address}</p>
+                                        <p><strong>Liên hệ:</strong> <span class="phone-text">${tutor.phone}</span></p>
+                                    </div>
 
                                     <p class="tutor-description-large">
                                             ${tutor.description}
@@ -193,7 +274,9 @@
                                                                     <span class="course-name">${course.subject.name}</span>
                                                                 </div>
                                                                 <div class="course-action">
-                                                                    <span class="course-price">${course.subject.formattedFee}/giờ</span>
+                                                                    <span class="course-price">
+                                                                            <fmt:formatNumber value="${course.subject.fee}" type="number" maxFractionDigits="0"/>đ/giờ
+                                                                    </span>
                                                                     <a href="${pageContext.request.contextPath}/booking?courseId=${course.id}&tutorId=${tutor.id}" class="btn-choose-course">
                                                                         Chọn Lớp Này
                                                                     </a>
@@ -238,8 +321,10 @@
 
 </main>
 
+
 <jsp:include page="/layout/footer.jsp"/>
 <script src="<c:url value='/js/main.js?v=3'/>"></script>
+
 <script>
 // Favorite toggle function
 function toggleFavorite(tutorId, btn) {
@@ -289,6 +374,79 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function updatePriceLabel(value) {
+    const label = document.getElementById('priceLabel');
+    // Đổi điều kiện thành 3 triệu
+    if (value >= 3000000) {
+        label.innerText = "Không giới hạn";
+    } else {
+        label.innerText = parseInt(value).toLocaleString('vi-VN') + " đ";
+    }
+}
+
+$(document).ready(function() {
+    $('#subjectSelect').select2({
+        placeholder: "Tất cả môn học",
+        allowClear: true, // Cho phép bấm nút X để xóa tìm kiếm
+        width: '100%',
+        language: {
+            noResults: function() {
+                return "Không tìm thấy môn học";
+            }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const levelSelect = document.getElementById('levelSelect');
+    const gradeSelect = document.getElementById('gradeSelect');
+
+    // Bản đồ cấu trúc Khối lớp tương ứng với từng Cấp học tại VN
+    const gradeMap = {
+        'cap1': ['Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5'],
+        'cap2': ['Lớp 6', 'Lớp 7', 'Lớp 8', 'Lớp 9'],
+        'cap3': ['Lớp 10', 'Lớp 11', 'Lớp 12']
+    };
+
+    // Hàm cập nhật danh sách Khối lớp
+    function updateGrades(selectedLevel, currentGrade) {
+        // Xóa sạch các option cũ, chỉ giữ lại option mặc định
+        gradeSelect.innerHTML = '<option value="">Chọn lớp...</option>';
+
+        if (selectedLevel && gradeMap[selectedLevel]) {
+            gradeMap[selectedLevel].forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.textContent = grade;
+                // Giữ lại trạng thái selected sau khi submit form
+                if (grade === currentGrade) {
+                    option.selected = true;
+                }
+                gradeSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Lắng nghe sự kiện khi người dùng thay đổi Cấp học
+    levelSelect.addEventListener('change', function() {
+        updateGrades(this.value, '');
+    });
+
+    // Kích hoạt chạy lần đầu khi load lại trang để giữ trạng thái đã chọn
+    const initialLevel = "${param.level}";
+    const initialGrade = "${requestScope.selectedGrade}";
+    if (initialLevel) {
+        updateGrades(initialLevel, initialGrade);
+    }
+    // BỔ SUNG: Đồng bộ nhãn chữ hiển thị học phí ngay khi trang vừa tải xong
+    const priceRange = document.getElementById('priceRange');
+    if (priceRange) {
+        updatePriceLabel(priceRange.value);
+    }
+});
+
 </script>
+
 </body>
 </html>
