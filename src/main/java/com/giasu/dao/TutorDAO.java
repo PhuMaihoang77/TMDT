@@ -236,8 +236,7 @@ public class TutorDAO {
         try { t.setBalance(rs.getLong("balance")); } catch (Exception e) {}
         return t;
     }
-    public List<Tutor> searchAdvanced(String keyword, String subjectName, String level, Integer minPrice, Integer maxPrice, Integer minRating) {
-        List<Tutor> list = new ArrayList<>();
+    public List<Tutor> searchAdvanced(String keyword, String subjectName, String level, String grade, String tutorType, Integer minPrice, Integer maxPrice, Integer minRating) {        List<Tutor> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT DISTINCT t.*, " +
                         "(SELECT COUNT(DISTINCT rs.student_id) FROM course c2 JOIN registered_subjects rs ON c2.id = rs.course_id WHERE c2.tutor_id = t.id) as total_students, " +
@@ -245,40 +244,66 @@ public class TutorDAO {
                         "(SELECT COUNT(*) FROM review r WHERE r.tutor_id = t.id) as total_reviews " +
                         "FROM tutor t " +
                         "JOIN account a ON t.account_id = a.id " +
-                        "LEFT JOIN course c ON t.id = c.tutor_id " +
-                        "LEFT JOIN subject s ON c.subject_id = s.id " +
+                        "JOIN course c ON t.id = c.tutor_id " +
+                        "JOIN subject s ON c.subject_id = s.id " +
                         "WHERE t.verified = 1 AND a.status = 'active'"
         );
 
         List<Object> params = new ArrayList<>();
 
-        // 1. Tìm theo tên gia sư HOẶC tên môn học khóa học HOẶC chuyên ngành
+        // 1. Tìm theo Từ khóa tự do (Tên gia sư, tên môn học, hoặc chuyên môn)
         if (keyword != null && !keyword.trim().isEmpty()) {
             sql.append(" AND (t.name ILIKE ? OR s.name ILIKE ? OR t.specialization ILIKE ?)");
             String kw = "%" + keyword.trim() + "%";
             params.add(kw); params.add(kw); params.add(kw);
         }
-        // 2. Tìm theo chuyên ngành / môn học lọc
+
+        // 2. Tìm theo Môn học / Chuyên môn (Dropdown Master Data)
         if (subjectName != null && !subjectName.trim().isEmpty()) {
             sql.append(" AND (s.name ILIKE ? OR t.specialization ILIKE ?)");
             String kw = "%" + subjectName.trim() + "%";
             params.add(kw); params.add(kw);
         }
-        if (level != null && !level.trim().isEmpty()) {
+
+        // 3. Logic lọc theo KHỐI LỚP (Ưu tiên cao nhất) - Ép khớp chuỗi biên chính xác tiếng Việt
+        if (grade != null && !grade.trim().isEmpty()) {
+            sql.append(" AND (s.level = ? OR s.level ILIKE ? OR s.level ILIKE ?)");
+            String g = grade.trim();
+            params.add(g);
+            params.add(g + " %"); // Khớp khi lớp nằm ở đầu/giữa chuỗi (Ví dụ: "Lớp 1 Cơ bản")
+            params.add("% " + g); // Khớp khi lớp nằm ở cuối chuỗi
+        }
+
+        // 4. Logic lọc theo CẤP HỌC (Chấp nhận cả cách ghi Lớp lẫn cách ghi Cấp trong DB)
+        else if (level != null && !level.trim().isEmpty()) {
             String lvl = level.trim();
-            if (lvl.equalsIgnoreCase("Tiểu Học")) {
-                sql.append(" AND (s.level ILIKE '%Lớp 1%' OR s.level ILIKE '%Lớp 2%' OR s.level ILIKE '%Lớp 3%' OR s.level ILIKE '%Lớp 4%' OR s.level ILIKE '%Lớp 5%')");
-            } else if (lvl.equalsIgnoreCase("THCS")) {
-                sql.append(" AND (s.level ILIKE '%Lớp 6%' OR s.level ILIKE '%Lớp 7%' OR s.level ILIKE '%Lớp 8%' OR s.level ILIKE '%Lớp 9%')");
-            } else if (lvl.equalsIgnoreCase("THPT")) {
-                sql.append(" AND (s.level ILIKE '%Lớp 10%' OR s.level ILIKE '%Lớp 11%' OR s.level ILIKE '%Lớp 12%')");
-            } else if (lvl.equalsIgnoreCase("Ngoại Ngữ")) {
-                sql.append(" AND (s.level ILIKE '%IELTS%' OR s.level ILIKE '%TOEIC%' OR s.level ILIKE '%Giao tiếp%' OR s.level ILIKE '%Ngoại Ngữ%' OR s.name ILIKE '%Tiếng Anh%')");
+            if (lvl.equalsIgnoreCase("cap1")) {
+                // Quét trúng nếu DB ghi cụ thể Lớp 1-5 HOẶC ghi chung là "Cấp 1", "Tiểu học" (loại trừ lớp 10,11,12)
+                sql.append(" AND (s.level ILIKE '%Lớp 1%' OR s.level ILIKE '%Lớp 2%' OR s.level ILIKE '%Lớp 3%' OR s.level ILIKE '%Lớp 4%' OR s.level ILIKE '%Lớp 5%' OR s.level ILIKE '%Cấp 1%' OR s.level ILIKE '%Tiểu học%')");
+                sql.append(" AND s.level NOT ILIKE '%Lớp 10%' AND s.level NOT ILIKE '%Lớp 11%' AND s.level NOT ILIKE '%Lớp 12%'");
+            } else if (lvl.equalsIgnoreCase("cap2")) {
+                // Quét trúng nếu DB ghi Lớp 6-9 HOẶC ghi chung là "Cấp 2", "THCS"
+                sql.append(" AND (s.level ILIKE '%Lớp 6%' OR s.level ILIKE '%Lớp 7%' OR s.level ILIKE '%Lớp 8%' OR s.level ILIKE '%Lớp 9%' OR s.level ILIKE '%Cấp 2%' OR s.level ILIKE '%THCS%')");
+            } else if (lvl.equalsIgnoreCase("cap3")) {
+                // Quét trúng nếu DB ghi Lớp 10-12 HOẶC ghi chung là "Cấp 3", "THPT"
+                sql.append(" AND (s.level ILIKE '%Lớp 10%' OR s.level ILIKE '%Lớp 11%' OR s.level ILIKE '%Lớp 12%' OR s.level ILIKE '%Cấp 3%' OR s.level ILIKE '%THPT%')");
             } else {
                 sql.append(" AND s.level ILIKE ?");
                 params.add("%" + lvl + "%");
             }
         }
+
+        // 4.5 Logic lọc theo Trình độ Gia Sư (Sinh viên / Giáo viên) dựa trên specialization
+        if (tutorType != null && !tutorType.trim().isEmpty()) {
+            String type = tutorType.trim().toLowerCase();
+            if (type.equals("sinhvien")) {
+                sql.append(" AND t.specialization ILIKE '%Sinh viên%'");
+            } else if (type.equals("giaovien")) {
+                sql.append(" AND (t.specialization ILIKE '%Giáo viên%' OR t.specialization ILIKE '%Cử nhân%' OR t.specialization ILIKE '%Thạc sĩ%' OR t.specialization ILIKE '%Tiến sĩ%')");
+            }
+        }
+
+        // 5. Tìm theo Khoảng học phí
         if (minPrice != null) {
             sql.append(" AND s.fee >= ?");
             params.add(minPrice);
@@ -287,13 +312,17 @@ public class TutorDAO {
             sql.append(" AND s.fee <= ?");
             params.add(maxPrice);
         }
+
+        // 6. Tìm theo Đánh giá sao tối thiểu
         if (minRating != null && minRating > 0) {
             sql.append(" AND t.evaluate >= ?");
             params.add(minRating);
         }
 
+        // Sắp xếp mặc định theo đánh giá cao nhất
         sql.append(" ORDER BY t.evaluate DESC");
 
+        // Thực thi câu lệnh SQL với tập tham số params động
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
@@ -312,7 +341,6 @@ public class TutorDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
-
     public boolean updateEvaluate(String tutorId, double evaluate) {
         String sql = "UPDATE tutor SET evaluate = ? WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
