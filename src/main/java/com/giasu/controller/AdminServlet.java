@@ -37,6 +37,12 @@ public class AdminServlet extends HttpServlet {
             case "/complaints":
                 showComplaints(req, resp);
                 break;
+            case "/api/revenue":
+                getRevenueChartData(req, resp);
+                break;
+            case "/api/pie-revenue":
+                getPieChartData(req, resp);
+                break;
             default:
                 showDashboard(req, resp);
         }
@@ -133,5 +139,56 @@ public class AdminServlet extends HttpServlet {
         List<Complaint> complaints = complaintDAO.findAll();
         req.setAttribute("complaints", complaints);
         req.getRequestDispatcher("/jsp/admin/complaints.jsp").forward(req, resp);
+    }
+
+    private void getRevenueChartData(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+        String type = req.getParameter("type");
+        if (type == null || type.trim().isEmpty()) {
+            type = "7days";
+        }
+        
+        int year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        String yearParam = req.getParameter("year");
+        if (yearParam != null && !yearParam.trim().isEmpty()) {
+            try {
+                year = Integer.parseInt(yearParam);
+            } catch (NumberFormatException e) {
+                // Keep default
+            }
+        }
+        
+        String startDate = req.getParameter("startDate");
+        String endDate = req.getParameter("endDate");
+        
+        List<java.util.Map<String, Object>> data = paymentDAO.getRevenueStatsByTime(type, year, startDate, endDate);
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        resp.getWriter().write(gson.toJson(data));
+    }
+
+    private void getPieChartData(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+        
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int month = cal.get(java.util.Calendar.MONTH) + 1; // 1-based
+        int year = cal.get(java.util.Calendar.YEAR);
+        
+        String monthParam = req.getParameter("month");
+        if (monthParam != null && !monthParam.trim().isEmpty()) {
+            try {
+                month = Integer.parseInt(monthParam);
+            } catch (NumberFormatException e) {}
+        }
+        
+        String yearParam = req.getParameter("year");
+        if (yearParam != null && !yearParam.trim().isEmpty()) {
+            try {
+                year = Integer.parseInt(yearParam);
+            } catch (NumberFormatException e) {}
+        }
+        
+        List<java.util.Map<String, Object>> data = paymentDAO.getSubjectRevenueStatsByMonth(month, year);
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        resp.getWriter().write(gson.toJson(data));
     }
 }

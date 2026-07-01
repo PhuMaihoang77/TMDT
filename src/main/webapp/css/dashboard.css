@@ -148,3 +148,59 @@ body {
     transform: scale(1.2);
 }
 
+/* Badge Styles for Payments & Statuses */
+.badge-payment {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+.badge-payment-deposit {
+    background-color: #d4edda;
+    color: #155724;
+}
+.badge-payment-withdraw {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.badge-payment-other {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.badge-status {
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+}
+.badge-status-completed {
+    background-color: #2ecc71;
+}
+.badge-status-pending {
+    background-color: #f39c12;
+}
+.badge-status-failed {
+    background-color: #e74c3c;
+}
+
+.badge-status-sm {
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+.badge-status-sm-confirmed {
+    background-color: #2ecc71;
+}
+.badge-status-sm-pending {
+    background-color: #f39c12;
+}
+.badge-status-sm-failed {
+    background-color: #e74c3c;
+}

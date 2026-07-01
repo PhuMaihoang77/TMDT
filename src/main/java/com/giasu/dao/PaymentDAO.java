@@ -6,6 +6,9 @@ import com.giasu.model.Student;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class PaymentDAO {
 
@@ -83,7 +86,7 @@ public class PaymentDAO {
     }
 
     public long getTotalRevenue() {
-        String sql = "SELECT COALESCE(SUM(amount), 0) FROM payment WHERE status = 'completed' AND payment_type = 'PAYMENT'";
+        String sql = "SELECT COALESCE(SUM(amount), 0) * 0.10 FROM payment WHERE status = 'completed' AND payment_type = 'PAYMENT'";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -155,5 +158,195 @@ public class PaymentDAO {
         p.setStudent(s);
 
         return p;
+    }
+
+    public List<Map<String, Object>> getRevenueStatsByTime(String type, int year, String startDate, String endDate) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "";
+        if ("7days".equals(type)) {
+            sql = "SELECT CAST(payment_date AS DATE) AS date_label, COALESCE(SUM(amount), 0) * 0.10 AS total " +
+                  "FROM payment " +
+                  "WHERE status = 'completed' AND payment_type = 'PAYMENT' " +
+                  "  AND payment_date >= CURRENT_DATE - INTERVAL '6 days' " +
+                  "GROUP BY date_label " +
+                  "ORDER BY date_label";
+        } else if ("30days".equals(type)) {
+            sql = "SELECT CAST(payment_date AS DATE) AS date_label, COALESCE(SUM(amount), 0) * 0.10 AS total " +
+                  "FROM payment " +
+                  "WHERE status = 'completed' AND payment_type = 'PAYMENT' " +
+                  "  AND payment_date >= CURRENT_DATE - INTERVAL '29 days' " +
+                  "GROUP BY date_label " +
+                  "ORDER BY date_label";
+        } else if ("monthly".equals(type)) {
+            sql = "SELECT EXTRACT(MONTH FROM payment_date)::INTEGER AS month_num, COALESCE(SUM(amount), 0) * 0.10 AS total " +
+                  "FROM payment " +
+                  "WHERE status = 'completed' AND payment_type = 'PAYMENT' " +
+                  "  AND EXTRACT(YEAR FROM payment_date) = ? " +
+                  "GROUP BY month_num " +
+                  "ORDER BY month_num";
+        } else if ("yearly".equals(type)) {
+            sql = "SELECT EXTRACT(YEAR FROM payment_date)::INTEGER AS year_num, COALESCE(SUM(amount), 0) * 0.10 AS total " +
+                  "FROM payment " +
+                  "WHERE status = 'completed' AND payment_type = 'PAYMENT' " +
+                  "GROUP BY year_num " +
+                  "ORDER BY year_num";
+        } else if ("custom".equals(type)) {
+            sql = "SELECT CAST(payment_date AS DATE) AS date_label, COALESCE(SUM(amount), 0) * 0.10 AS total " +
+                  "FROM payment " +
+                  "WHERE status = 'completed' AND payment_type = 'PAYMENT' " +
+                  "  AND payment_date::date >= ?::date AND payment_date::date <= ?::date " +
+                  "GROUP BY date_label " +
+                  "ORDER BY date_label";
+        }
+
+        if ("monthly".equals(type)) {
+            Map<Integer, Long> monthlyMap = new HashMap<>();
+            for (int i = 1; i <= 12; i++) {
+                monthlyMap.put(i, 0L);
+            }
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, year);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        monthlyMap.put(rs.getInt("month_num"), rs.getLong("total"));
+                    }
+                }
+            } catch (SQLException e) { e.printStackTrace(); }
+            for (int i = 1; i <= 12; i++) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                map.put("label", "T" + i);
+                map.put("value", monthlyMap.get(i));
+                list.add(map);
+            }
+            return list;
+        }
+
+        if ("7days".equals(type) || "30days".equals(type)) {
+            int numDays = "7days".equals(type) ? 7 : 30;
+            Map<String, Long> dailyMap = new LinkedHashMap<>();
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM");
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -(numDays - 1));
+            
+            // Initialize last N days to 0
+            for (int i = 0; i < numDays; i++) {
+                dailyMap.put(sdf.format(cal.getTime()), 0L);
+                cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            }
+            
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Date date = rs.getDate("date_label");
+                    String label = sdf.format(date);
+                    if (dailyMap.containsKey(label)) {
+                        dailyMap.put(label, rs.getLong("total"));
+                    }
+                }
+            } catch (SQLException e) { e.printStackTrace(); }
+            
+            for (Map.Entry<String, Long> entry : dailyMap.entrySet()) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                map.put("label", entry.getKey());
+                map.put("value", entry.getValue());
+                list.add(map);
+            }
+            return list;
+        }
+
+        if ("custom".equals(type)) {
+            Map<String, Long> dailyMap = new LinkedHashMap<>();
+            java.text.SimpleDateFormat sdfStr = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            java.text.SimpleDateFormat sdfDisplay = new java.text.SimpleDateFormat("dd/MM");
+            
+            try {
+                java.util.Date start = sdfStr.parse(startDate);
+                java.util.Date end = sdfStr.parse(endDate);
+                
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(start);
+                
+                int daysDiff = (int) ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+                if (daysDiff < 0) daysDiff = 0;
+                if (daysDiff > 90) daysDiff = 90;
+                
+                for (int i = 0; i <= daysDiff; i++) {
+                    dailyMap.put(sdfStr.format(cal.getTime()), 0L);
+                    cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
+                }
+                
+                try (Connection conn = DBConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, startDate);
+                    ps.setString(2, endDate);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Date date = rs.getDate("date_label");
+                            String label = sdfStr.format(date);
+                            if (dailyMap.containsKey(label)) {
+                                dailyMap.put(label, rs.getLong("total"));
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            for (Map.Entry<String, Long> entry : dailyMap.entrySet()) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                try {
+                    java.util.Date d = sdfStr.parse(entry.getKey());
+                    map.put("label", sdfDisplay.format(d));
+                } catch (Exception e) {
+                    map.put("label", entry.getKey());
+                }
+                map.put("value", entry.getValue());
+                list.add(map);
+            }
+            return list;
+        }
+
+        // Yearly
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                map.put("label", "Năm " + rs.getInt("year_num"));
+                map.put("value", rs.getLong("total"));
+                list.add(map);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    public List<Map<String, Object>> getSubjectRevenueStatsByMonth(int month, int year) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT COALESCE(s.name, 'Môn học khác') AS subject_name, COALESCE(SUM(p.amount), 0) * 0.10 AS total_revenue " +
+                     "FROM payment p " +
+                     "LEFT JOIN course c ON p.course_id = c.id " +
+                     "LEFT JOIN subject s ON c.subject_id = s.id " +
+                     "WHERE p.status = 'completed' AND p.payment_type = 'PAYMENT' " +
+                     "  AND EXTRACT(MONTH FROM p.payment_date) = ? " +
+                     "  AND EXTRACT(YEAR FROM p.payment_date) = ? " +
+                     "GROUP BY s.name " +
+                     "ORDER BY total_revenue DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, month);
+            ps.setInt(2, year);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("label", rs.getString("subject_name").trim());
+                    map.put("value", rs.getLong("total_revenue"));
+                    list.add(map);
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
     }
 }
