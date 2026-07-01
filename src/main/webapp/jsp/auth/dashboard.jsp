@@ -1,33 +1,35 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | TutorHub</title>
-    <link rel="stylesheet" href="<c:url value='/css/main.css'/>">
-    <link rel="stylesheet" href="<c:url value='/css/dashboard.css'/>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <jsp:include page="/layout/header.jsp"/>
+        <!DOCTYPE html>
+        <html lang="vi">
 
-    <c:choose>
-        <c:when test="${sessionScope.account.role == 3}">
-            <div class="admin-layout">
-                <jsp:include page="/layout/admin-sidebar.jsp"/>
-                <main class="admin-content">
-        </c:when>
-        <c:otherwise>
-            <div class="dashboard-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
-                <main>
-        </c:otherwise>
-    </c:choose>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Dashboard | TutorHub</title>
+            <link rel="stylesheet" href="<c:url value='/css/main.css'/>">
+            <link rel="stylesheet" href="<c:url value='/css/dashboard.css'/>">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        </head>
+
+        <body>
+            <jsp:include page="/layout/header.jsp" />
+
+            <c:choose>
+                <c:when test="${sessionScope.account.role == 3}">
+                    <div class="admin-layout">
+                        <jsp:include page="/layout/admin-sidebar.jsp" />
+                        <main class="admin-content">
+                </c:when>
+                <c:otherwise>
+                    <div class="dashboard-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+                        <main>
+                </c:otherwise>
+            </c:choose>
             <section class="dashboard-grid">
                 <h1>Dashboard</h1>
-                
+
                 <c:if test="${sessionScope.account.role == 1}">
                     <!-- Student Dashboard -->
                     <div class="dashboard-cards">
@@ -57,21 +59,29 @@
                     <c:if test="${not empty requestScope.favoriteTutorList}">
                         <div class="section-card" style="margin-top: 1.5rem;">
                             <h2><i class="fas fa-heart" style="color: #e74c3c;"></i> Gia Sư Yêu Thích</h2>
-                            <div class="favorite-tutors-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                            <div class="favorite-tutors-grid"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;">
                                 <c:forEach var="fav" items="${requestScope.favoriteTutorList}">
-                                    <div class="favorite-tutor-card" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; gap: 1rem; align-items: center; transition: box-shadow 0.2s;">
-                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: #f0f4ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <i class="fas fa-user-graduate" style="font-size: 1.5rem; color: #4f46e5;"></i>
+                                    <div class="favorite-tutor-card"
+                                        style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; gap: 1rem; align-items: center; transition: box-shadow 0.2s;">
+                                        <div
+                                            style="width: 60px; height: 60px; border-radius: 50%; background: #f0f4ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fas fa-user-graduate"
+                                                style="font-size: 1.5rem; color: #4f46e5;"></i>
                                         </div>
                                         <div style="flex: 1; min-width: 0;">
-                                            <h4 style="margin: 0 0 0.25rem; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fav.name}</h4>
-                                            <p style="margin: 0 0 0.25rem; font-size: 0.8rem; color: #64748b;">${fav.specialization}</p>
+                                            <h4
+                                                style="margin: 0 0 0.25rem; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                ${fav.name}</h4>
+                                            <p style="margin: 0 0 0.25rem; font-size: 0.8rem; color: #64748b;">
+                                                ${fav.specialization}</p>
                                             <div style="color: #f39c12; font-size: 0.8rem;">
                                                 <c:forEach begin="1" end="${fav.evaluate}">⭐</c:forEach>
                                                 <span style="color: #64748b; margin-left: 4px;">${fav.evaluate}/5</span>
                                             </div>
                                         </div>
-                                        <a href="${pageContext.request.contextPath}/tutor-detail?id=${fav.id}" class="btn btn-sm btn-primary" style="flex-shrink: 0;">
+                                        <a href="${pageContext.request.contextPath}/tutor-detail?id=${fav.id}"
+                                            class="btn btn-sm btn-primary" style="flex-shrink: 0;">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </div>
@@ -103,34 +113,46 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${b.status eq 'pending'}">
-                                                            <span class="badge badge-warning" style="background-color: #f39c12; color: white; padding: 4px 8px; border-radius: 4px;">Đang chờ duyệt</span>
+                                                            <span class="badge badge-warning"
+                                                                style="background-color: #f39c12; color: white; padding: 4px 8px; border-radius: 4px;">Đang
+                                                                chờ duyệt</span>
                                                         </c:when>
                                                         <c:when test="${b.status eq 'confirmed'}">
-                                                            <span class="badge badge-success" style="background-color: #2ecc71; color: white; padding: 4px 8px; border-radius: 4px;">Đã xác nhận</span>
+                                                            <span class="badge badge-success"
+                                                                style="background-color: #2ecc71; color: white; padding: 4px 8px; border-radius: 4px;">Đã
+                                                                xác nhận</span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="badge badge-danger" style="background-color: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px;">Đã hủy</span>
+                                                            <span class="badge badge-danger"
+                                                                style="background-color: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px;">Đã
+                                                                hủy</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${b.status eq 'pending'}">
-                                                            <a href="<c:url value='/booking?action=cancel&amp;id=${b.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đặt lịch này?');">
+                                                            <a href="<c:url value='/booking?action=cancel&amp;id=${b.id}'/>"
+                                                                class="btn btn-sm btn-danger"
+                                                                onclick="return confirm('Bạn có chắc chắn muốn hủy đặt lịch này?');">
                                                                 <i class="fas fa-times"></i> Hủy
                                                             </a>
                                                         </c:when>
                                                         <c:when test="${b.status eq 'confirmed'}">
-                                                            <a href="${pageContext.request.contextPath}/payment?courseId=${b.courseId}&tutorId=${b.tutorId}" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                            <a href="${pageContext.request.contextPath}/payment?courseId=${b.courseId}&tutorId=${b.tutorId}"
+                                                                class="btn btn-sm btn-success"
+                                                                style="margin-right: 5px;">
                                                                 <i class="fas fa-credit-card"></i> Thanh Toán
                                                             </a>
                                                             <button type="button" class="btn btn-sm btn-warning"
-                                                                    onclick="openFeedbackModal('${b.id}', '${b.studentId}', '${b.tutorId}', '${b.courseId}', `${b.tutor.name}`)">
-                                                                <i class="fas fa-exclamation-triangle"></i> Khiếu Nại / Đánh Giá
+                                                                onclick="openFeedbackModal('${b.id}', '${b.studentId}', '${b.tutorId}', '${b.courseId}', `${b.tutor.name}`)">
+                                                                <i class="fas fa-exclamation-triangle"></i> Khiếu Nại /
+                                                                Đánh Giá
                                                             </button>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span style="color: var(--gray-400);">Không có hành động</span>
+                                                            <span style="color: var(--gray-400);">Không có hành
+                                                                động</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
@@ -149,7 +171,8 @@
                     <div class="section-card" style="margin-top: 2rem;">
                         <h2>Lịch Sử Thanh Toán & Hóa Đơn</h2>
                         <div style="text-align:right; margin-bottom: 0.5rem;">
-                            <a href="${pageContext.request.contextPath}/wallet" class="btn btn-sm" style="background: linear-gradient(135deg,#6c63ff,#3ecf8e); color:white; padding: 6px 14px; border-radius: 20px; text-decoration:none;">
+                            <a href="${pageContext.request.contextPath}/wallet" class="btn btn-sm"
+                                style="background: linear-gradient(135deg,#6c63ff,#3ecf8e); color:white; padding: 6px 14px; border-radius: 20px; text-decoration:none;">
                                 <i class="fas fa-wallet"></i> Quản Lý Ví
                             </a>
                         </div>
@@ -172,18 +195,44 @@
                                             <tr>
                                                 <td><strong>${p.id}</strong></td>
                                                 <td>
-                                                    <span style="font-size:0.8rem; font-weight:600; padding:3px 8px; border-radius:12px;
-                                                        background-color: ${p.paymentType eq 'DEPOSIT' ? '#d4edda' : (p.paymentType eq 'WITHDRAW' ? '#f8d7da' : '#cce5ff')};
-                                                        color: ${p.paymentType eq 'DEPOSIT' ? '#155724' : (p.paymentType eq 'WITHDRAW' ? '#721c24' : '#004085')};">
+
+                                                    <c:set var="badgeBg" value="#cce5ff" />
+
+                                                    <c:set var="badgeColor" value="#004085" />
+
+                                                    <c:if test="${p.paymentType eq 'DEPOSIT'}">
+
+                                                        <c:set var="badgeBg" value="#d4edda" />
+
+                                                        <c:set var="badgeColor" value="#155724" />
+
+                                                    </c:if>
+
+                                                    <c:if test="${p.paymentType eq 'WITHDRAW'}">
+
+                                                        <c:set var="badgeBg" value="#f8d7da" />
+
+                                                        <c:set var="badgeColor" value="#721c24" />
+
+                                                    </c:if>
+
+                                                    <span
+                                                        style="font-size:0.8rem; font-weight:600; padding:3px 8px; border-radius:12px; background-color:${badgeBg}; color:${badgeColor};">
+
                                                         ${p.typeDisplay}
+
                                                     </span>
+
                                                 </td>
                                                 <td>${p.tutor.name}</td>
-                                                <td><span style="color: #e74c3c; font-weight: 600;">${p.getSignedFormattedAmount(1)}</span></td>
+                                                <td><span
+                                                        style="color: #e74c3c; font-weight: 600;">${p.getSignedFormattedAmount(1)}</span>
+                                                </td>
                                                 <td>${p.paymentDate}</td>
                                                 <td>${p.methodDisplay}</td>
                                                 <td>
-                                                    <span class="badge" style="background-color: ${p.status eq 'completed' ? '#2ecc71' : (p.status eq 'pending' ? '#f39c12' : '#e74c3c')}; color: white; padding: 4px 8px; border-radius: 4px;">
+                                                    <span
+                                                        class="badge-status ${p.status eq 'completed' ? 'badge-status-completed' : (p.status eq 'pending' ? 'badge-status-pending' : 'badge-status-failed')}">
                                                         ${p.statusDisplay}
                                                     </span>
                                                 </td>
@@ -222,11 +271,13 @@
                             <p class="dash-value">${requestScope.monthlyIncome}</p>
                         </div>
 
-                        <div class="dash-card" style="cursor:pointer;" onclick="window.location='${pageContext.request.contextPath}/wallet'">
+                        <div class="dash-card" style="cursor:pointer;"
+                            onclick="window.location='${pageContext.request.contextPath}/wallet'">
                             <i class="fas fa-wallet" style="color:#6c63ff;"></i>
                             <h3>Số Dư Ví</h3>
                             <p class="dash-value" style="color:#6c63ff;">${requestScope.tutorBalance}</p>
-                            <a href="${pageContext.request.contextPath}/wallet" style="font-size:0.8rem;">Rút Tiền &rarr;</a>
+                            <a href="${pageContext.request.contextPath}/wallet" style="font-size:0.8rem;">Rút Tiền
+                                &rarr;</a>
                         </div>
 
                         <div class="dash-card">
@@ -239,31 +290,40 @@
 
                     <div class="section-card" style="margin-bottom: 2rem;">
                         <h2><i class="fas fa-plus-circle"></i> Tạo Khóa Học Mới</h2>
-                        <form action="<c:url value='/dashboard'/>" method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <form action="<c:url value='/dashboard'/>" method="post"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
                             <input type="hidden" name="action" value="createCourse">
 
                             <div class="form-group">
                                 <label>Tên Môn Học</label>
-                                <input type="text" name="name" class="form-control" placeholder="VD: Toán Nâng Cao" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="text" name="name" class="form-control" placeholder="VD: Toán Nâng Cao"
+                                    required
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                             </div>
 
                             <div class="form-group">
                                 <label>Lớp / Trình Độ</label>
-                                <input type="text" name="level" class="form-control" placeholder="VD: Lớp 10, IELTS 6.5" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="text" name="level" class="form-control" placeholder="VD: Lớp 10, IELTS 6.5"
+                                    required
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                             </div>
 
                             <div class="form-group">
                                 <label>Học Phí (VNĐ / Giờ)</label>
-                                <input type="number" name="fee" class="form-control" placeholder="VD: 200000" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="number" name="fee" class="form-control" placeholder="VD: 200000" required
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                             </div>
 
                             <div class="form-group">
                                 <label>Mô tả chi tiết</label>
-                                <input type="text" name="description" class="form-control" placeholder="Tóm tắt nội dung học..." required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="text" name="description" class="form-control"
+                                    placeholder="Tóm tắt nội dung học..." required
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                             </div>
 
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;"><i class="fas fa-save"></i> Đăng Khóa Học</button>
+                                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;"><i
+                                        class="fas fa-save"></i> Đăng Khóa Học</button>
                             </div>
                         </form>
                     </div>
@@ -294,28 +354,39 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${b.status eq 'pending'}">
-                                                            <span class="badge badge-warning" style="background-color: #f39c12; color: white; padding: 4px 8px; border-radius: 4px;">Chờ phê duyệt</span>
+                                                            <span class="badge badge-warning"
+                                                                style="background-color: #f39c12; color: white; padding: 4px 8px; border-radius: 4px;">Chờ
+                                                                phê duyệt</span>
                                                         </c:when>
                                                         <c:when test="${b.status eq 'confirmed'}">
-                                                            <span class="badge badge-success" style="background-color: #2ecc71; color: white; padding: 4px 8px; border-radius: 4px;">Đã xác nhận</span>
+                                                            <span class="badge badge-success"
+                                                                style="background-color: #2ecc71; color: white; padding: 4px 8px; border-radius: 4px;">Đã
+                                                                xác nhận</span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="badge badge-danger" style="background-color: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px;">Đã từ chối</span>
+                                                            <span class="badge badge-danger"
+                                                                style="background-color: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px;">Đã
+                                                                từ chối</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${b.status eq 'pending'}">
-                                                            <a href="${pageContext.request.contextPath}/dashboard?action=confirm&id=${b.id}" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                            <a href="${pageContext.request.contextPath}/dashboard?action=confirm&id=${b.id}"
+                                                                class="btn btn-sm btn-success"
+                                                                style="margin-right: 5px;">
                                                                 <i class="fas fa-check"></i> Chấp Nhận
                                                             </a>
-                                                            <a href="${pageContext.request.contextPath}/dashboard?action=cancel&id=${b.id}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn từ chối lịch học này?');">
+                                                            <a href="${pageContext.request.contextPath}/dashboard?action=cancel&id=${b.id}"
+                                                                class="btn btn-sm btn-danger"
+                                                                onclick="return confirm('Bạn có chắc muốn từ chối lịch học này?');">
                                                                 <i class="fas fa-times"></i> Từ Chối
                                                             </a>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span style="color: var(--gray-400);">Không có hành động</span>
+                                                            <span style="color: var(--gray-400);">Không có hành
+                                                                động</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
@@ -352,18 +423,22 @@
                                             <tr>
                                                 <td><strong>${p.id}</strong></td>
                                                 <td>
-                                                    <span style="font-size:0.8rem; font-weight:600; padding:3px 8px; border-radius:12px;
+                                                    <span
+                                                        style="font-size:0.8rem; font-weight:600; padding:3px 8px; border-radius:12px;
                                                         background-color: ${p.paymentType eq 'DEPOSIT' ? '#d4edda' : (p.paymentType eq 'WITHDRAW' ? '#f8d7da' : '#cce5ff')};
                                                         color: ${p.paymentType eq 'DEPOSIT' ? '#155724' : (p.paymentType eq 'WITHDRAW' ? '#721c24' : '#004085')};">
                                                         ${p.typeDisplay}
                                                     </span>
                                                 </td>
                                                 <td>${p.student.name}</td>
-                                                <td><span style="color: #2ecc71; font-weight: 600;">${p.getSignedFormattedAmount(2)}</span></td>
+                                                <td><span
+                                                        style="color: #2ecc71; font-weight: 600;">${p.getSignedFormattedAmount(2)}</span>
+                                                </td>
                                                 <td>${p.paymentDate}</td>
                                                 <td>${p.methodDisplay}</td>
                                                 <td>
-                                                    <span class="badge" style="background-color: ${p.status eq 'completed' ? '#2ecc71' : (p.status eq 'pending' ? '#f39c12' : '#e74c3c')}; color: white; padding: 4px 8px; border-radius: 4px;">
+                                                    <span
+                                                        class="badge-status ${p.status eq 'completed' ? 'badge-status-completed' : (p.status eq 'pending' ? 'badge-status-pending' : 'badge-status-failed')}">
                                                         ${p.statusDisplay}
                                                     </span>
                                                 </td>
@@ -372,7 +447,8 @@
                                     </c:when>
                                     <c:otherwise>
                                         <tr class="empty-row">
-                                            <td colspan="7" style="text-align: center;">Chưa có lịch sử nhận thanh toán</td>
+                                            <td colspan="7" style="text-align: center;">Chưa có lịch sử nhận thanh toán
+                                            </td>
                                         </tr>
                                     </c:otherwise>
                                 </c:choose>
@@ -381,14 +457,14 @@
                     </div>
                 </c:if>
             </section>
-        </main>
-    </div>
-            <jsp:include page="/layout/feedback-modal.jsp"/>
-            <jsp:include page="/layout/footer.jsp"/>
+            </main>
+            </div>
+            <jsp:include page="/layout/feedback-modal.jsp" />
+            <jsp:include page="/layout/footer.jsp" />
 
             <script src="<c:url value='/js/main.js'/>"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
                     const msgType = urlParams.get('msgType');
@@ -407,6 +483,6 @@
                     }
                 });
             </script>
-</body>
-</html>
+        </body>
 
+        </html>
